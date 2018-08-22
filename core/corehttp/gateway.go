@@ -48,3 +48,12 @@ func VersionOption() ServeOption {
 		return mux, nil
 	}
 }
+
+func ProxyOption() ServeOption {
+	return func(_ *core.IpfsNode, _ net.Listener, mux *http.ServeMux) (*http.ServeMux, error) {
+		mux.HandleFunc("/proxy", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, "I'm a proxy lol\n")
+		})
+		return mux, nil
+	}
+}

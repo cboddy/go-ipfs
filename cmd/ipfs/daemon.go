@@ -456,6 +456,8 @@ func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error
 		defaultMux("/debug/pprof/"),
 		corehttp.MetricsScrapingOption("/debug/metrics/prometheus"),
 		corehttp.LogOption(),
+		//proxy over p2p streams
+		corehttp.ProxyOption(),
 	}
 
 	if len(cfg.Gateway.RootRedirect) > 0 {
@@ -547,6 +549,7 @@ func serveHTTPGateway(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, e
 		corehttp.VersionOption(),
 		corehttp.IPNSHostnameOption(),
 		corehttp.GatewayOption(writable, "/ipfs", "/ipns"),
+		corehttp.ProxyOption(),
 	}
 
 	if len(cfg.Gateway.RootRedirect) > 0 {

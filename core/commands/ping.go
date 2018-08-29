@@ -181,6 +181,7 @@ func pingPeer(ctx context.Context, n *core.IpfsNode, pid peer.ID, numPings int) 
 	return outChan
 }
 
+//TODO README
 func ParsePeerParam(text string) (ma.Multiaddr, peer.ID, error) {
 	// to be replaced with just multiaddr parsing, once ptp is a multiaddr protocol
 	idx := strings.LastIndex(text, "/")

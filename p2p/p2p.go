@@ -44,6 +44,7 @@ func (p2p *P2P) newStreamTo(ctx2 context.Context, p peer.ID, protocol string) (n
 }
 
 // Dial creates new P2P stream to a remote listener
+// this one
 func (p2p *P2P) Dial(ctx context.Context, addr ma.Multiaddr, peer peer.ID, proto string, bindAddr ma.Multiaddr) (*ListenerInfo, error) {
 	lnet, _, err := manet.DialArgs(bindAddr)
 	if err != nil {
@@ -54,7 +55,7 @@ func (p2p *P2P) Dial(ctx context.Context, addr ma.Multiaddr, peer peer.ID, proto
 		Identity: p2p.identity,
 		Protocol: proto,
 	}
-
+	//README
 	remote, err := p2p.newStreamTo(ctx, peer, proto)
 	if err != nil {
 		return nil, err

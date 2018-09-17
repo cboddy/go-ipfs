@@ -18,7 +18,7 @@ import (
 
 func ProxyOption() ServeOption {
 	return func(ipfsNode *core.IpfsNode, _ net.Listener, mux *http.ServeMux) (*http.ServeMux, error) {
-		mux.HandleFunc("/proxy", func(w http.ResponseWriter, request *http.Request) {
+		mux.HandleFunc("/proxy/", func(w http.ResponseWriter, request *http.Request) {
 			//get free tcp port
 			_p2p := ipfsNode.P2P
 			proto := "http"
@@ -26,8 +26,10 @@ func ProxyOption() ServeOption {
 			parsedRequest, err := parseRequest(request)
 			if err != nil {
 				// TODO: send error response
+				fmt.Println(err)
 				return
 			}
+			fmt.Println("parsed proxy req")
 
 			// get stream to proxy-target
 			stream := getStreamForPeer(ipfsNode, &parsedRequest.target)
@@ -37,17 +39,19 @@ func ProxyOption() ServeOption {
 				_, err := _p2p.Dial(ipfsNode.Context(), nil, parsedRequest.target, proto, bindAddr)
 				if err != nil {
 					// TODO: send error response
+					fmt.Println(err)
 					return
 				}
 				stream = getStreamForPeer(ipfsNode, &parsedRequest.target)
 
 				if stream == nil {
 					// TODO: send error response
-					//fmt.Errorf("Unable to open p2p stream to target %s", parsedRequest.target)
+					fmt.Errorf("Unable to open p2p stream to target %s", parsedRequest.target)
 					// TODO: send error response
 					return
 				}
 			}
+			fmt.Println("got stream")
 			// serialize proxy request
 			proxyReq, err := http.NewRequest("method", "url", request.Body)
 			if err != nil {
@@ -82,18 +86,23 @@ type proxyRequest struct {
 // /http/$peer_id/$name/$http_path
 func parseRequest(request *http.Request) (*proxyRequest, error) {
 	path := request.URL.Path
-	split := strings.SplitN(path, "/", 5)
-	if len(split) != 4 {
+
+	split := strings.SplitN(path, "/", 6)
+	if split[2] != "http" {
+		return nil, fmt.Errorf("Invalid proxy request protocol '%s'", path)
+	}
+
+	if len(split) < 6 {
 		return nil, fmt.Errorf("Invalid request path '%s'", path)
 	}
 
-	peerID, err := peer.IDB58Decode(split[1])
+	peerID, err := peer.IDB58Decode(split[3])
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &proxyRequest{peerID, split[2], split[3]}, nil
+	return &proxyRequest{peerID, split[4], split[5]}, nil
 }
 
 // get stream from p2p registry or nil if not present

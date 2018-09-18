@@ -21,7 +21,7 @@ func ProxyOption() ServeOption {
 		mux.HandleFunc("/proxy/", func(w http.ResponseWriter, request *http.Request) {
 			//get free tcp port
 			_p2p := ipfsNode.P2P
-			proto := "http"
+
 			// parse request
 			parsedRequest, err := parseRequest(request)
 			if err != nil {
@@ -36,17 +36,18 @@ func ProxyOption() ServeOption {
 			if stream == nil {
 				// create new p2p stream to target since none exists
 				bindAddr, _ := ma.NewMultiaddr("/ip4/127.0.0.1/tcp/0")
-				_, err := _p2p.Dial(ipfsNode.Context(), nil, parsedRequest.target, proto, bindAddr)
+				_, err := _p2p.Dial(ipfsNode.Context(), nil, parsedRequest.target, "/p2p/"+parsedRequest.name, bindAddr)
 				if err != nil {
 					// TODO: send error response
+					fmt.Println("error dialing p2p stream")
 					fmt.Println(err)
 					return
 				}
+				fmt.Println("dialled")
 				stream = getStreamForPeer(ipfsNode, &parsedRequest.target)
-
+				fmt.Println("looked up stream")
 				if stream == nil {
-					// TODO: send error response
-					fmt.Errorf("Unable to open p2p stream to target %s", parsedRequest.target)
+					fmt.Println("Unable to open p2p stream to target " + parsedRequest.target)
 					// TODO: send error response
 					return
 				}

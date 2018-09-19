@@ -30,6 +30,7 @@ func ProxyOption() ServeOption {
 				return
 			}
 			fmt.Println("parsed proxy req")
+			fmt.Println(parsedRequest)
 
 			// get stream to proxy-target
 			stream := getStreamForPeer(ipfsNode, &parsedRequest.target)
@@ -47,14 +48,14 @@ func ProxyOption() ServeOption {
 				stream = getStreamForPeer(ipfsNode, &parsedRequest.target)
 				fmt.Println("looked up stream")
 				if stream == nil {
-					fmt.Println("Unable to open p2p stream to target " + parsedRequest.target)
+					fmt.Printf("Unable to open p2p stream to target %s\n", parsedRequest.target)
 					// TODO: send error response
 					return
 				}
 			}
 			fmt.Println("got stream")
 			// serialize proxy request
-			proxyReq, err := http.NewRequest("method", "url", request.Body)
+			proxyReq, err := http.NewRequest(request.Method, parsedRequest.httpPath, request.Body)
 			if err != nil {
 				// TODO: send error response
 				return
@@ -110,7 +111,7 @@ func parseRequest(request *http.Request) (*proxyRequest, error) {
 func getStreamForPeer(ipfsNode *core.IpfsNode, peerID *peer.ID) *p2p.StreamInfo {
 	for _, stream := range ipfsNode.P2P.Streams.Streams {
 		//TODO: is this comparing?
-		if &(stream.RemotePeer) == peerID {
+		if stream.RemotePeer == *peerID {
 			return stream
 		}
 	}

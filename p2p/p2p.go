@@ -3,6 +3,7 @@ package p2p
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	p2phost "gx/ipfs/QmQ1hwb95uSSZR8jSPJysnfHxBDQAykSXsmz5TwTzxjq2Z/go-libp2p-host"
@@ -33,7 +34,7 @@ func NewP2P(identity peer.ID, peerHost p2phost.Host, peerstore pstore.Peerstore)
 	}
 }
 
-func (p2p *P2P) newStreamTo(ctx2 context.Context, p peer.ID, protocol string) (net.Stream, error) {
+func (p2p *P2P) NewStreamTo(ctx2 context.Context, p peer.ID, protocol string) (net.Stream, error) {
 	ctx, cancel := context.WithTimeout(ctx2, time.Second*30) //TODO: configurable?
 	defer cancel()
 	err := p2p.peerHost.Connect(ctx, pstore.PeerInfo{ID: p})
@@ -55,12 +56,11 @@ func (p2p *P2P) Dial(ctx context.Context, addr ma.Multiaddr, peer peer.ID, proto
 		Identity: p2p.identity,
 		Protocol: proto,
 	}
-	//README
-	remote, err := p2p.newStreamTo(ctx, peer, proto)
+	remote, err := p2p.NewStreamTo(ctx, peer, proto)
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Printf("ADDING A P2P STREAM!!!")
 	switch lnet {
 	case "tcp", "tcp4", "tcp6":
 		listener, err := manet.Listen(bindAddr)
@@ -107,6 +107,7 @@ func (p2p *P2P) doAccept(listenerInfo *ListenerInfo, remote net.Stream, listener
 		Registry: &p2p.Streams,
 	}
 
+	fmt.Printf("REGISTERING P2P STREAM!!!")
 	p2p.Streams.Register(&stream)
 	stream.startStreaming()
 }

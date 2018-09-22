@@ -32,25 +32,30 @@ func ProxyOption() ServeOption {
 			fmt.Println(parsedRequest)
 
 			stream, err := _p2p.NewStreamTo(ipfsNode.Context(), parsedRequest.target, "/p2p/"+parsedRequest.name)
-			fmt.Printf("OPENED STREAM %s\n", stream)
+			fmt.Printf("OPENED STREAM %s %s %s\n", parsedRequest.target, parsedRequest.name, stream)
 			if err != nil {
+				fmt.Println("OMG")
 				fmt.Println(err)
 				return
 			}
 			// serialize proxy request
 			proxyReq, err := http.NewRequest(request.Method, parsedRequest.httpPath, request.Body)
+
 			if err != nil {
 				fmt.Println(err)
 				// TODO: send error response
 				return
 			}
 			// send request to proxy target
-			s := bufio.NewReader(stream)
 
-			fmt.Printf("OPENED READER TO STREAM %s\n", proxyReq)
+			fmt.Printf("OPENED READER TO STREAM %v\n", *proxyReq)
+			proxyReq.Write(stream)
+			fmt.Printf("FINISHED WRITING PROXY REQEUST\n")
+
+			s := bufio.NewReader(stream)
 			proxyResponse, err := http.ReadResponse(s, proxyReq)
-			fmt.Printf("GOT PROXY RESPONSE %s\n", proxyResponse)
 			defer func() { proxyResponse.Body.Close() }()
+			fmt.Printf("GOT PROXY RESPONSE %v\n", *proxyResponse)
 			if err != nil {
 				// TODO: send error response
 				fmt.Println(err)

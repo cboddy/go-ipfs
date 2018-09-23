@@ -283,8 +283,8 @@ can transparently connect to a p2p service.
 				return
 			}
 		}
-		listenerInfo, err := n.P2P.Dial(n.Context(), addr, peer, proto, bindAddr)
 
+		listenerInfo, err := n.P2P.Dial(n.Context(), addr, peer, proto, bindAddr)
 		if err != nil {
 			res.SetError(err, cmdkit.ErrNormal)
 			return

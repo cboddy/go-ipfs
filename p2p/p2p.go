@@ -3,7 +3,6 @@ package p2p
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	p2phost "gx/ipfs/QmQ1hwb95uSSZR8jSPJysnfHxBDQAykSXsmz5TwTzxjq2Z/go-libp2p-host"

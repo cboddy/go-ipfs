@@ -164,7 +164,6 @@ Headers.
 		cmdkit.BoolOption(enableFloodSubKwd, "Instantiate the ipfs daemon with the experimental pubsub feature enabled."),
 		cmdkit.BoolOption(enableIPNSPubSubKwd, "Enable IPNS record distribution through pubsub; enables pubsub."),
 		cmdkit.BoolOption(enableMultiplexKwd, "Add the experimental 'go-multiplex' stream muxer to libp2p on construction.").WithDefault(true),
-		// TODO: add http proxy over p2p option
 		// TODO: add way to override addresses. tricky part: updating the config if also --init.
 		// cmdkit.StringOption(apiAddrKwd, "Address for the daemon rpc API (overrides config)"),
 		// cmdkit.StringOption(swarmAddrKwd, "Address for the swarm socket (overrides config)"),
@@ -456,7 +455,6 @@ func serveHTTPApi(req *cmds.Request, cctx *oldcmds.Context) (<-chan error, error
 		defaultMux("/debug/pprof/"),
 		corehttp.MetricsScrapingOption("/debug/metrics/prometheus"),
 		corehttp.LogOption(),
-		//proxy over p2p streams
 		corehttp.ProxyOption(),
 	}
 

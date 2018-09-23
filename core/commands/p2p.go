@@ -266,7 +266,7 @@ can transparently connect to a p2p service.
 			res.SetError(err, cmdkit.ErrNormal)
 			return
 		}
-		//README
+
 		addr, peer, err := ParsePeerParam(req.Arguments()[0])
 		if err != nil {
 			res.SetError(err, cmdkit.ErrNormal)
@@ -283,8 +283,8 @@ can transparently connect to a p2p service.
 				return
 			}
 		}
-		//README
 		listenerInfo, err := n.P2P.Dial(n.Context(), addr, peer, proto, bindAddr)
+
 		if err != nil {
 			res.SetError(err, cmdkit.ErrNormal)
 			return
@@ -410,5 +410,3 @@ func getNode(req cmds.Request) (*core.IpfsNode, error) {
 
 	return n, nil
 }
-
-// LOOK HERE
